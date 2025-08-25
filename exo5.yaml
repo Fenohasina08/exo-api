@@ -1,0 +1,160 @@
+ openapi: 3.0.3
+ info:
+  title: API Products & Orders
+  version: 1.0.0
+
+ tags:
+  - name: Products
+    description: Opérations liées aux produits
+  - name: Orders
+    description: Opérations liées aux commandes
+
+ paths:
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Liste des produits
+      responses:
+        '200':
+          description: Liste des produits disponibles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+              examples:
+                success:
+                  summary: Exemple de produits
+                  value:
+                    - id: 1
+                      name: "Sushi"
+                      price: 10.5
+                    - id: 2
+                      name: "Pizza"
+                      price: 15.0
+
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Liste paginée des commandes
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+      responses:
+        '200':
+          description: Liste des commandes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+              examples:
+                paginated:
+                  summary: Exemple de commandes paginées
+                  value:
+                    - id: 101
+                      customer_name: "Alice"
+                      creation_datetime: "2025-08-25T12:30:00Z"
+                      total_amount: 120.50
+                    - id: 102
+                      customer_name: "Bob"
+                      creation_datetime: "2025-08-25T13:00:00Z"
+                      total_amount: 85.00
+
+    post:
+      tags:
+        - Orders
+      summary: Créer une commande
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+            examples:
+              createOrder:
+                summary: Exemple de création
+                value:
+                  customer_name: "Charlie"
+                  creation_datetime: "2025-08-25T14:45:00Z"
+                  total_amount: 200.75
+      responses:
+        '201':
+          description: Commande créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                createdOrder:
+                  summary: Exemple de réponse
+                  value:
+                    id: 103
+                    customer_name: "Charlie"
+                    creation_datetime: "2025-08-25T14:45:00Z"
+                    total_amount: 200.75
+
+ components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+      required:
+        - id
+        - name
+        - price
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifiant unique de la commande
+        customer_name:
+          type: string
+        creation_datetime:
+          type: string
+          format: date-time
+        total_amount:
+          type: number
+          format: float
+      required:
+        - customer_name
+        - creation_datetime
+        - total_amount
+
+  parameters:
+    page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 1
+      description: Numéro de la page
+    size:
+      name: size
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 10
+      description: Nombre d’éléments par page
+
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
