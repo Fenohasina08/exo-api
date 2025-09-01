@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: User API
+  version: 1.1.0
+paths:
+ /users:
+  get:
+    parameters:
+       - in: query
+         name: page
+         schema:
+          type: integer
+          example: 1
+         required: true
+         description: numero de page de pagination
+       - in: query
+         name: size
+         schema:
+          type: integer
+          example: 20
+         required: true
+         description: Nombre d'utilisateurs par page
+    responses:
+     '200':
+      description: Prendre la liste des utilisateurs
+     
+      content:
+       application/json:
+        schema:
+         type: object
+         properties: 
+          id : 
+           type: integer
+           example: 1
+          name:
+           type: string
+           example: Alice
+          email:
+            type: string
+            example: alice@example.com
+     '400':
+       description: afficher les erreurs
+       content:
+        application/json:
+         schema:
+          type: object
+          properties:
+           error:
+            type: string
+            example: Bad types for provided query parameters
+
